@@ -1,0 +1,196 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Font families */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-sans: var(--font-body);
+
+  /* Brand Colors - Dar Kosmetik */
+  --color-green-deep: #1a4a2e;
+  --color-green-mid: #2d6b45;
+  --color-green-bright: #3d8c5a;
+  --color-green-light: #5aaa72;
+  --color-green-mist: #e8f2eb;
+  --color-green-pale: #f3f8f4;
+  --color-earth: #8c6239;
+  --color-earth-light: #c49a6c;
+  --color-cream: #faf7f2;
+  --color-ink: #1c2419;
+
+  /* Semantic tokens */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-ink);
+  --color-card: white;
+  --color-card-foreground: var(--color-ink);
+  --color-popover: white;
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-green-mid);
+  --color-primary-foreground: white;
+  --color-secondary: var(--color-green-mist);
+  --color-secondary-foreground: var(--color-green-deep);
+  --color-muted: var(--color-green-pale);
+  --color-muted-foreground: #647c6a;
+  --color-accent: var(--color-green-mist);
+  --color-accent-foreground: var(--color-green-deep);
+  --color-destructive: #dc2626;
+  --color-border: #d4e0d9;
+  --color-input: #d4e0d9;
+  --color-ring: var(--color-green-bright);
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+}
+
+:root {
+  --background: #faf7f2;
+  --foreground: #1c2419;
+  --card: #ffffff;
+  --card-foreground: #1c2419;
+  --popover: #ffffff;
+  --popover-foreground: #1c2419;
+  --primary: #2d6b45;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f2eb;
+  --secondary-foreground: #1a4a2e;
+  --muted: #f3f8f4;
+  --muted-foreground: #647c6a;
+  --accent: #e8f2eb;
+  --accent-foreground: #1a4a2e;
+  --destructive: #dc2626;
+  --border: #d4e0d9;
+  --input: #d4e0d9;
+  --ring: #3d8c5a;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-cream text-ink;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  /* Typography scale */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 2.5rem;
+  }
+
+  h3 {
+    font-size: 1.75rem;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+  }
+
+  h5 {
+    font-size: 1.25rem;
+  }
+
+  h6 {
+    font-size: 1.125rem;
+  }
+
+  p {
+    line-height: 1.65;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+
+  .font-body {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+
+  /* Brand color utilities */
+  .bg-green-deep { background-color: #1a4a2e; }
+  .bg-green-mid { background-color: #2d6b45; }
+  .bg-green-bright { background-color: #3d8c5a; }
+  .bg-green-light { background-color: #5aaa72; }
+  .bg-green-mist { background-color: #e8f2eb; }
+  .bg-green-pale { background-color: #f3f8f4; }
+  .bg-earth { background-color: #8c6239; }
+  .bg-earth-light { background-color: #c49a6c; }
+  .bg-cream { background-color: #faf7f2; }
+  .bg-ink { background-color: #1c2419; }
+
+  .text-green-deep { color: #1a4a2e; }
+  .text-green-mid { color: #2d6b45; }
+  .text-green-bright { color: #3d8c5a; }
+  .text-green-light { color: #5aaa72; }
+  .text-earth { color: #8c6239; }
+  .text-earth-light { color: #c49a6c; }
+  .text-ink { color: #1c2419; }
+
+  .border-green-deep { border-color: #1a4a2e; }
+  .border-green-mid { border-color: #2d6b45; }
+  .border-green-bright { border-color: #3d8c5a; }
+
+  /* Animation */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
