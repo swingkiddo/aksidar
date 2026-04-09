@@ -9,7 +9,6 @@ import {
   Package,
   Leaf,
   Award,
-  Phone,
   CheckCircle,
   Factory,
   BadgeCheck,
@@ -90,18 +89,16 @@ export default function HomePage() {
               <motion.div variants={fadeInUp} className="space-y-6">
                 <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-green-light text-sm font-medium">
                   <Leaf className="w-4 h-4" />
-                  Собственное производство с 2009 года
+                  25 лет на рынке (с 2001 г.)
                 </span>
 
                 <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-tight">
-                  Натуральная мыльная продукция
-                  <span className="block text-green-light mt-1">оптом</span>
+                  Производитель косметики и бытовой химии
+                  <span className="block text-green-light mt-1">из Санкт-Петербурга оптом</span>
                 </h1>
 
                 <p className="text-lg sm:text-xl text-white/60 max-w-xl leading-relaxed">
-                  Жидкое мыло, бытовая химия и средства гигиены для розницы,
-                  HoReCa и дистрибьюции. Собственное производство,
-                  сертифицированное качество, гибкие условия.
+                  Жидкое мыло «Флородель», шампуни, гели для душа и средства «ЕЛИКУМ» для розничных сетей, HoReCa и дистрибьюторов. Выпускаем более 20 000 тонн продукции в год.
                 </p>
               </motion.div>
 
@@ -120,7 +117,8 @@ export default function HomePage() {
                 <Link href="/catalog">
                   <Button
                     size="lg"
-                    className="bg-white text-green-deep hover:bg-green-mist h-14 px-8 text-base font-semibold shadow-lg"
+                    variant="ghost"
+                    className="h-14 px-8 text-base font-semibold border border-white/20 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm transition-all"
                   >
                     Смотреть каталог
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -177,7 +175,7 @@ export default function HomePage() {
                   className="absolute -top-4 -left-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-5 py-4"
                 >
                   <p className="text-2xl font-display font-bold text-white">
-                    15+
+                    25+
                   </p>
                   <p className="text-xs text-white/50">лет на рынке</p>
                 </motion.div>
@@ -194,7 +192,7 @@ export default function HomePage() {
                   className="absolute -bottom-4 -right-4 bg-green-bright/20 backdrop-blur-md rounded-2xl border border-green-bright/20 px-5 py-4"
                 >
                   <p className="text-2xl font-display font-bold text-green-light">
-                    5000+
+                    20 000+
                   </p>
                   <p className="text-xs text-green-light/60">тонн в год</p>
                 </motion.div>
