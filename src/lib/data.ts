@@ -454,9 +454,7 @@ export const usps: USP[] = [
 
 export const trustStats: TrustStat[] = [
   { value: "25+", label: "лет на рынке" },
-  { value: "50+", label: "SKU в каталоге" },
-  { value: "3", label: "страны поставок" },
-  { value: "5", label: "сертификатов" },
+  { value: "9+", label: "сертификатов" },
   { value: "20 000+", label: "тонн в год" },
 ];
 
