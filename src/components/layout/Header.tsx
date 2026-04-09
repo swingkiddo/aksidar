@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { navItems } from "@/lib/data";
@@ -25,24 +25,23 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow] duration-300",
         isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm"
-          : "bg-white/95 backdrop-blur-md shadow-sm"
+          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-green-mist/20"
+          : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
+            <div className={cn("w-16 h-16 rounded-full flex items-center justify-center", isScrolled ? "bg-white" : "bg-white/20 backdrop-blur-sm")}>
               <img
                 src="/logo.png"
                 alt="Дар Косметик"
                 className="w-16 h-16 object-contain"
               />
             </div>
-
           </Link>
 
           {/* Desktop Navigation */}
@@ -52,10 +51,14 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-green-mid",
+                  "text-sm font-medium transition-colors",
                   pathname === item.href
-                    ? "text-green-mid"
-                    : "text-ink/80"
+                    ? isScrolled
+                      ? "text-green-deep font-semibold"
+                      : "text-white font-semibold"
+                    : isScrolled
+                      ? "text-ink/80 hover:text-green-mid"
+                      : "text-white/70 hover:text-white"
                 )}
               >
                 {item.label}
@@ -67,13 +70,16 @@ export function Header() {
           <div className="hidden lg:flex items-center gap-4">
             <a
               href="tel:+78001234567"
-              className="flex items-center gap-2 text-sm font-medium text-ink/80 hover:text-green-mid transition-colors"
+              className={cn(
+                "flex items-center gap-2 text-sm font-medium transition-colors",
+                isScrolled ? "text-ink/80 hover:text-green-mid" : "text-white/70 hover:text-white"
+              )}
             >
               <Phone className="w-4 h-4" />
               8 (800) 123-45-67
             </a>
             <Link href="/contacts">
-              <Button className="bg-green-mid hover:bg-green-deep text-white">
+              <Button className={isScrolled ? "bg-green-mid hover:bg-green-deep text-white" : "bg-white text-green-deep hover:bg-green-mist"}>
                 Запросить прайс
               </Button>
             </Link>
@@ -82,14 +88,14 @@ export function Header() {
           {/* Mobile Menu */}
           <div className="flex items-center gap-2 lg:hidden">
             <Link href="/contacts">
-              <Button size="sm" className="bg-green-mid hover:bg-green-deep text-white">
+              <Button size="sm" className={isScrolled ? "bg-green-mid hover:bg-green-deep text-white" : "bg-white text-green-deep hover:bg-green-mist"}>
                 Прайс
               </Button>
             </Link>
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger>
-                <Button variant="ghost" size="icon" className="text-ink">
+                <Button variant="ghost" size="icon" className={isScrolled ? "text-ink" : "text-white"}>
                   <Menu className="w-6 h-6" />
                   <span className="sr-only">Открыть меню</span>
                 </Button>
@@ -144,4 +150,3 @@ export function Header() {
     </header>
   );
 }
-
