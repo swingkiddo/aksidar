@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Filter,
@@ -35,7 +34,6 @@ import {
   products,
   filterProducts,
   getFilterOptions,
-  categoryInfo,
 } from "@/lib/data";
 import { ProductCategory } from "@/types";
 
@@ -47,16 +45,11 @@ const categories: { id: ProductCategory | "all"; label: string }[] = [
   { id: "household-chemicals", label: "Бытовая химия" },
 ];
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05 },
+    transition: { staggerChildren: 0.06 },
   },
 };
 
@@ -70,7 +63,7 @@ interface FilterSectionProps {
 function FilterSection({ title, options, selected, onToggle }: FilterSectionProps) {
   return (
     <div className="space-y-3">
-      <h4 className="font-display font-semibold text-green-deep">{title}</h4>
+      {title && <h4 className="font-display font-semibold text-green-deep">{title}</h4>}
       <div className="space-y-2">
         {options.map((option) => (
           <label
@@ -146,7 +139,7 @@ function FilterSidebar({
         )}
       </div>
 
-      <Accordion  defaultValue={["volume", "packaging", "fragrance"]}>
+      <Accordion defaultValue={["volume", "packaging", "fragrance"]}>
         <AccordionItem value="volume">
           <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
             Объем
@@ -193,50 +186,6 @@ function FilterSidebar({
   );
 }
 
-interface MobileFilterDrawerProps extends FilterSidebarProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-function MobileFilterDrawer({
-  isOpen,
-  onOpenChange,
-  ...filterProps
-}: MobileFilterDrawerProps) {
-  return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] bg-cream">
-        <SheetHeader className="text-left border-b border-border pb-4">
-          <SheetTitle className="font-display text-xl text-green-deep">
-            Фильтры
-          </SheetTitle>
-        </SheetHeader>
-        <div className="py-6 overflow-y-auto max-h-[calc(85vh-180px)]">
-          <FilterSidebar {...filterProps} />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-border flex gap-3">
-          <Button
-            variant="outline"
-            className="flex-1 border-green-mid text-green-mid"
-            onClick={() => {
-              filterProps.onClear();
-              onOpenChange(false);
-            }}
-          >
-            Сбросить
-          </Button>
-          <Button
-            className="flex-1 bg-green-mid hover:bg-green-deep text-white"
-            onClick={() => onOpenChange(false)}
-          >
-            Применить
-          </Button>
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-}
-
 function ProductCard({
   product,
   onRequestPrice,
@@ -250,36 +199,34 @@ function ProductCard({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-green-mist/50 hover:shadow-xl transition-all duration-300"
+      transition={{ duration: 0.3 }}
+      className="group bg-white rounded-2xl overflow-hidden border border-green-mist/40 hover:shadow-xl hover:shadow-green-deep/5 transition-all duration-500"
     >
       <Link href={`/catalog/${product.slug}`} className="block">
         <div className="aspect-[4/3] relative bg-gradient-to-br from-green-mist to-green-pale overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
-            <Package className="w-16 h-16 text-green-mid/30 group-hover:scale-110 transition-transform duration-500" />
+            <Package className="w-16 h-16 text-green-mid/20 group-hover:scale-125 group-hover:text-green-mid/35 transition-all duration-500" />
           </div>
 
-          {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {product.isNew && (
-              <Badge className="bg-blue-500 text-white border-0">
+              <Badge className="bg-green-bright text-white border-0 text-xs">
                 <Sparkles className="w-3 h-3 mr-1" />
                 Новинка
               </Badge>
             )}
             {product.isBestseller && (
-              <Badge className="bg-orange-500 text-white border-0">
+              <Badge className="bg-earth-warm text-white border-0 text-xs">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 Хит
               </Badge>
             )}
           </div>
 
-          {/* Category label */}
           <div className="absolute bottom-3 right-3">
             <Badge
               variant="secondary"
-              className="bg-white/90 text-ink text-xs"
+              className="bg-white/80 backdrop-blur-sm text-ink/70 text-xs"
             >
               {product.categoryLabel}
             </Badge>
@@ -293,14 +240,13 @@ function ProductCard({
             {product.name}
           </h3>
         </Link>
-        <p className="text-sm text-ink/60 mt-1 line-clamp-1">{product.tagline}</p>
+        <p className="text-sm text-ink/50 mt-1 line-clamp-1">{product.tagline}</p>
 
-        {/* Packaging badges */}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {product.specs.packaging.slice(0, 2).map((pkg) => (
             <span
               key={pkg}
-              className="inline-flex items-center px-2 py-1 rounded-md bg-green-mist/50 text-xs text-green-deep"
+              className="inline-flex items-center px-2 py-1 rounded-md bg-green-mist/60 text-xs text-green-deep"
             >
               {pkg}
             </span>
@@ -312,20 +258,18 @@ function ProductCard({
           )}
         </div>
 
-        {/* MOQ Badge */}
         <div className="mt-4 flex items-center gap-2">
           <Badge
             variant="outline"
-            className="border-earth text-earth bg-earth/5"
+            className="border-earth/30 text-earth bg-earth/5 text-xs"
           >
             Мин. заказ: {product.moq}
           </Badge>
         </div>
 
-        {/* CTA */}
-        <div className="mt-4 pt-4 border-t border-border">
+        <div className="mt-4 pt-4 border-t border-green-mist/30">
           <Button
-            className="w-full bg-green-mid hover:bg-green-deep text-white"
+            className="w-full bg-green-mid hover:bg-green-deep text-white transition-all duration-300"
             onClick={(e) => {
               e.preventDefault();
               onRequestPrice();
@@ -344,33 +288,23 @@ function CatalogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const initialCategory = (() => {
+    const cat = searchParams.get("category") as ProductCategory | "all";
+    return (cat && categories.some((c) => c.id === cat)) ? cat : "all";
+  })();
+  const initialVolumes = searchParams.get("volumes")?.split(",") || [];
+  const initialPackaging = searchParams.get("packaging")?.split(",") || [];
+  const initialFragrances = searchParams.get("fragrances")?.split(",") || [];
+
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all">(
-    "all"
-  );
-  const [selectedVolumes, setSelectedVolumes] = useState<string[]>([]);
-  const [selectedPackaging, setSelectedPackaging] = useState<string[]>([]);
-  const [selectedFragrances, setSelectedFragrances] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all">(initialCategory);
+  const [selectedVolumes, setSelectedVolumes] = useState<string[]>(initialVolumes);
+  const [selectedPackaging, setSelectedPackaging] = useState<string[]>(initialPackaging);
+  const [selectedFragrances, setSelectedFragrances] = useState<string[]>(initialFragrances);
 
   const filterOptions = getFilterOptions();
 
-  // Initialize from URL params
-  useEffect(() => {
-    const category = searchParams.get("category") as ProductCategory | "all";
-    const volumes = searchParams.get("volumes")?.split(",") || [];
-    const packaging = searchParams.get("packaging")?.split(",") || [];
-    const fragrances = searchParams.get("fragrances")?.split(",") || [];
-
-    if (category && categories.some((c) => c.id === category)) {
-      setSelectedCategory(category);
-    }
-    if (volumes.length > 0) setSelectedVolumes(volumes);
-    if (packaging.length > 0) setSelectedPackaging(packaging);
-    if (fragrances.length > 0) setSelectedFragrances(fragrances);
-  }, [searchParams]);
-
-  // Update URL when filters change
   const updateURL = useCallback(
     (params: {
       category?: ProductCategory | "all";
@@ -401,12 +335,7 @@ function CatalogContent() {
 
   const handleCategoryChange = (category: ProductCategory | "all") => {
     setSelectedCategory(category);
-    updateURL({
-      category,
-      volumes: selectedVolumes,
-      packaging: selectedPackaging,
-      fragrances: selectedFragrances,
-    });
+    updateURL({ category, volumes: selectedVolumes, packaging: selectedPackaging, fragrances: selectedFragrances });
   };
 
   const toggleVolume = (volume: string) => {
@@ -414,12 +343,7 @@ function CatalogContent() {
       ? selectedVolumes.filter((v) => v !== volume)
       : [...selectedVolumes, volume];
     setSelectedVolumes(newVolumes);
-    updateURL({
-      category: selectedCategory,
-      volumes: newVolumes,
-      packaging: selectedPackaging,
-      fragrances: selectedFragrances,
-    });
+    updateURL({ category: selectedCategory, volumes: newVolumes, packaging: selectedPackaging, fragrances: selectedFragrances });
   };
 
   const togglePackaging = (packaging: string) => {
@@ -427,12 +351,7 @@ function CatalogContent() {
       ? selectedPackaging.filter((p) => p !== packaging)
       : [...selectedPackaging, packaging];
     setSelectedPackaging(newPackaging);
-    updateURL({
-      category: selectedCategory,
-      volumes: selectedVolumes,
-      packaging: newPackaging,
-      fragrances: selectedFragrances,
-    });
+    updateURL({ category: selectedCategory, volumes: selectedVolumes, packaging: newPackaging, fragrances: selectedFragrances });
   };
 
   const toggleFragrance = (fragrance: string) => {
@@ -440,12 +359,7 @@ function CatalogContent() {
       ? selectedFragrances.filter((f) => f !== fragrance)
       : [...selectedFragrances, fragrance];
     setSelectedFragrances(newFragrances);
-    updateURL({
-      category: selectedCategory,
-      volumes: selectedVolumes,
-      packaging: selectedPackaging,
-      fragrances: newFragrances,
-    });
+    updateURL({ category: selectedCategory, volumes: selectedVolumes, packaging: selectedPackaging, fragrances: newFragrances });
   };
 
   const clearFilters = () => {
@@ -456,18 +370,10 @@ function CatalogContent() {
     router.push("/catalog", { scroll: false });
   };
 
-  const filteredProducts = filterProducts(
-    selectedCategory,
-    selectedVolumes,
-    selectedPackaging,
-    selectedFragrances
-  );
+  const filteredProducts = filterProducts(selectedCategory, selectedVolumes, selectedPackaging, selectedFragrances);
 
   const activeFiltersCount =
-    selectedVolumes.length +
-    selectedPackaging.length +
-    selectedFragrances.length +
-    (selectedCategory !== "all" ? 1 : 0);
+    selectedVolumes.length + selectedPackaging.length + selectedFragrances.length + (selectedCategory !== "all" ? 1 : 0);
 
   const filterSidebarProps: FilterSidebarProps = {
     filterOptions,
@@ -484,12 +390,15 @@ function CatalogContent() {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-green-mid text-white pt-40 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-br from-green-deep via-green-mid to-green-bright text-white pt-40 pb-24 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '36px 36px' }} />
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-green-bright/10 to-transparent" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-display text-4xl sm:text-5xl font-bold"
+            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold"
           >
             Каталог продукции
           </motion.h1>
@@ -497,26 +406,26 @@ function CatalogContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-4 text-lg text-white/80 max-w-2xl"
+            className="mt-4 text-lg text-white/60 max-w-2xl"
           >
             Жидкое мыло и бытовая химия оптом от производителя
           </motion.p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Category Tabs */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                  "px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
                   selectedCategory === cat.id
-                    ? "bg-green-mid text-white"
-                    : "bg-white text-ink/70 hover:bg-green-mist border border-border"
+                    ? "bg-green-deep text-white shadow-md"
+                    : "bg-white text-ink/60 hover:bg-green-mist border border-green-mist/40"
                 )}
               >
                 {cat.label}
@@ -528,7 +437,7 @@ function CatalogContent() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-24 bg-white rounded-2xl p-6 border border-green-mist/50">
+            <div className="sticky top-24 bg-white rounded-2xl p-6 border border-green-mist/40">
               <FilterSidebar {...filterSidebarProps} />
             </div>
           </aside>
@@ -568,8 +477,7 @@ function CatalogContent() {
                         </button>
                       )}
                     </div>
-
-                    <Accordion  defaultValue={["volume", "packaging", "fragrance"]}>
+                    <Accordion defaultValue={["volume", "packaging", "fragrance"]}>
                       <AccordionItem value="volume">
                         <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
                           Объем
@@ -577,39 +485,19 @@ function CatalogContent() {
                         <AccordionContent>
                           <div className="space-y-2">
                             {filterOptions.volumes.map((option) => (
-                              <label
-                                key={option}
-                                className="flex items-center gap-3 cursor-pointer group"
-                              >
+                              <label key={option} className="flex items-center gap-3 cursor-pointer group">
                                 <div
-                                  className={cn(
-                                    "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
-                                    selectedVolumes.includes(option)
-                                      ? "bg-green-mid border-green-mid"
-                                      : "border-green-mid/30 group-hover:border-green-mid"
-                                  )}
+                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedVolumes.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
                                   onClick={() => toggleVolume(option)}
                                 >
-                                  {selectedVolumes.includes(option) && (
-                                    <Check className="w-3 h-3 text-white" />
-                                  )}
+                                  {selectedVolumes.includes(option) && <Check className="w-3 h-3 text-white" />}
                                 </div>
-                                <span
-                                  className={cn(
-                                    "text-sm transition-colors",
-                                    selectedVolumes.includes(option)
-                                      ? "text-green-deep font-medium"
-                                      : "text-ink/70 group-hover:text-ink"
-                                  )}
-                                >
-                                  {option}
-                                </span>
+                                <span className={cn("text-sm transition-colors", selectedVolumes.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
                               </label>
                             ))}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
-
                       <AccordionItem value="packaging">
                         <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
                           Упаковка
@@ -617,39 +505,19 @@ function CatalogContent() {
                         <AccordionContent>
                           <div className="space-y-2">
                             {filterOptions.packaging.map((option) => (
-                              <label
-                                key={option}
-                                className="flex items-center gap-3 cursor-pointer group"
-                              >
+                              <label key={option} className="flex items-center gap-3 cursor-pointer group">
                                 <div
-                                  className={cn(
-                                    "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
-                                    selectedPackaging.includes(option)
-                                      ? "bg-green-mid border-green-mid"
-                                      : "border-green-mid/30 group-hover:border-green-mid"
-                                  )}
+                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedPackaging.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
                                   onClick={() => togglePackaging(option)}
                                 >
-                                  {selectedPackaging.includes(option) && (
-                                    <Check className="w-3 h-3 text-white" />
-                                  )}
+                                  {selectedPackaging.includes(option) && <Check className="w-3 h-3 text-white" />}
                                 </div>
-                                <span
-                                  className={cn(
-                                    "text-sm transition-colors",
-                                    selectedPackaging.includes(option)
-                                      ? "text-green-deep font-medium"
-                                      : "text-ink/70 group-hover:text-ink"
-                                  )}
-                                >
-                                  {option}
-                                </span>
+                                <span className={cn("text-sm transition-colors", selectedPackaging.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
                               </label>
                             ))}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
-
                       <AccordionItem value="fragrance">
                         <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
                           Аромат
@@ -657,33 +525,14 @@ function CatalogContent() {
                         <AccordionContent>
                           <div className="space-y-2">
                             {filterOptions.fragrances.map((option) => (
-                              <label
-                                key={option}
-                                className="flex items-center gap-3 cursor-pointer group"
-                              >
+                              <label key={option} className="flex items-center gap-3 cursor-pointer group">
                                 <div
-                                  className={cn(
-                                    "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
-                                    selectedFragrances.includes(option)
-                                      ? "bg-green-mid border-green-mid"
-                                      : "border-green-mid/30 group-hover:border-green-mid"
-                                  )}
+                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedFragrances.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
                                   onClick={() => toggleFragrance(option)}
                                 >
-                                  {selectedFragrances.includes(option) && (
-                                    <Check className="w-3 h-3 text-white" />
-                                  )}
+                                  {selectedFragrances.includes(option) && <Check className="w-3 h-3 text-white" />}
                                 </div>
-                                <span
-                                  className={cn(
-                                    "text-sm transition-colors",
-                                    selectedFragrances.includes(option)
-                                      ? "text-green-deep font-medium"
-                                      : "text-ink/70 group-hover:text-ink"
-                                  )}
-                                >
-                                  {option}
-                                </span>
+                                <span className={cn("text-sm transition-colors", selectedFragrances.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
                               </label>
                             ))}
                           </div>
@@ -693,27 +542,13 @@ function CatalogContent() {
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-border flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-green-mid text-green-mid"
-                    onClick={() => {
-                      clearFilters();
-                      setMobileFiltersOpen(false);
-                    }}
-                  >
-                    Сбросить
-                  </Button>
-                  <Button
-                    className="flex-1 bg-green-mid hover:bg-green-deep text-white"
-                    onClick={() => setMobileFiltersOpen(false)}
-                  >
-                    Применить
-                  </Button>
+                  <Button variant="outline" className="flex-1 border-green-mid text-green-mid" onClick={() => { clearFilters(); setMobileFiltersOpen(false); }}>Сбросить</Button>
+                  <Button className="flex-1 bg-green-mid hover:bg-green-deep text-white" onClick={() => setMobileFiltersOpen(false)}>Применить</Button>
                 </div>
               </SheetContent>
             </Sheet>
 
-            <span className="text-sm text-ink/60">
+            <span className="text-sm text-ink/50">
               {filteredProducts.length} товаров
             </span>
           </div>
@@ -739,12 +574,14 @@ function CatalogContent() {
             </motion.div>
 
             {filteredProducts.length === 0 && (
-              <div className="text-center py-16">
-                <Package className="w-16 h-16 text-green-mid/30 mx-auto mb-4" />
-                <h3 className="font-display text-xl text-green-deep mb-2">
+              <div className="text-center py-20">
+                <div className="w-20 h-20 rounded-full bg-green-mist mx-auto mb-6 flex items-center justify-center">
+                  <Package className="w-10 h-10 text-green-mid/40" />
+                </div>
+                <h3 className="font-display text-2xl text-green-deep mb-2">
                   Товары не найдены
                 </h3>
-                <p className="text-ink/60 mb-6">
+                <p className="text-ink/50 mb-6">
                   Попробуйте изменить параметры фильтрации
                 </p>
                 <Button
@@ -768,7 +605,7 @@ function CatalogContent() {
 
 export default function CatalogPage() {
   return (
-    <Suspense fallback={<div className="h-screen bg-cream" />}>
+    <Suspense fallback={<div className="min-h-screen bg-cream" />}>
       <CatalogContent />
     </Suspense>
   );

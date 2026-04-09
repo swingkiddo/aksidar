@@ -1,36 +1,11 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import {
-  ChevronRight,
-  Package,
-  CheckCircle,
-  ArrowRight,
-  Award,
-  TrendingUp,
-  Sparkles,
-  Phone,
-  FileText,
-  Beaker,
-  Clock,
-  Droplets,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
 import {
   getProductBySlug,
   getAllProductSlugs,
   getRelatedProducts,
   categoryInfo,
 } from "@/lib/data";
-import { ProductCategory } from "@/types";
 import ProductDetailContent from "./ProductDetailContent";
 
 interface PageProps {
