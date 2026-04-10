@@ -41,4 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 PROJECT_PLAN.md
-categories
+
+/src/generated/prisma
+/prisma/dev.db
