@@ -174,7 +174,7 @@ function CertificatesContent() {
             <span className="text-sm text-ink/50">
               {currentIndex + 1} / {certificates.length}
             </span>
-            <Button variant="outline" className="border-green-mid text-green-mid" asChild>
+            <Button variant="outline" className="border-green-mid text-green-mid">
               <a href={selectedCert?.image} download target="_blank" rel="noopener noreferrer">
                 Скачать
               </a>

@@ -162,6 +162,7 @@ interface ProductCardProps {
     name: string;
     slug: string;
     volume: string;
+    image: string | null;
     brand: { name: string };
     category: { name: string };
   };
@@ -180,9 +181,17 @@ function ProductCard({ product, onRequestPrice }: ProductCardProps) {
     >
       <Link href={`/catalog/${product.slug}`} className="block">
         <div className="aspect-[4/3] relative bg-gradient-to-br from-green-mist to-green-pale overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Package className="w-16 h-16 text-green-mid/20 group-hover:scale-125 group-hover:text-green-mid/35 transition-all duration-500" />
-          </div>
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-contain p-4"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Package className="w-16 h-16 text-green-mid/20 group-hover:scale-125 group-hover:text-green-mid/35 transition-all duration-500" />
+            </div>
+          )}
 
           <div className="absolute top-3 left-3">
             <Badge
