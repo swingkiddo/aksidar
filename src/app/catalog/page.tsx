@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,8 +10,6 @@ import {
   ArrowRight,
   X,
   Check,
-  Sparkles,
-  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,20 +28,8 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { ContactDialog } from "@/components/shared/ContactDialog";
-import {
-  products,
-  filterProducts,
-  getFilterOptions,
-} from "@/lib/data";
-import { ProductCategory } from "@/types";
-
-const categories: { id: ProductCategory | "all"; label: string }[] = [
-  { id: "all", label: "Все" },
-  { id: "liquid-soap-canisters", label: "Канистры" },
-  { id: "liquid-soap-cartridges", label: "Картриджи" },
-  { id: "liquid-soap-bottles", label: "Бутылки" },
-  { id: "household-chemicals", label: "Бытовая химия" },
-];
+import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -101,25 +87,23 @@ function FilterSection({ title, options, selected, onToggle }: FilterSectionProp
 }
 
 interface FilterSidebarProps {
-  filterOptions: ReturnType<typeof getFilterOptions>;
+  volumes: string[];
+  brands: string[];
   selectedVolumes: string[];
-  selectedPackaging: string[];
-  selectedFragrances: string[];
+  selectedBrands: string[];
   onToggleVolume: (v: string) => void;
-  onTogglePackaging: (p: string) => void;
-  onToggleFragrance: (f: string) => void;
+  onToggleBrand: (b: string) => void;
   onClear: () => void;
   activeFiltersCount: number;
 }
 
 function FilterSidebar({
-  filterOptions,
+  volumes,
+  brands,
   selectedVolumes,
-  selectedPackaging,
-  selectedFragrances,
+  selectedBrands,
   onToggleVolume,
-  onTogglePackaging,
-  onToggleFragrance,
+  onToggleBrand,
   onClear,
   activeFiltersCount,
 }: FilterSidebarProps) {
@@ -139,45 +123,31 @@ function FilterSidebar({
         )}
       </div>
 
-      <Accordion defaultValue={["volume", "packaging", "fragrance"]}>
+      <Accordion defaultValue={["volume", "brand"]}>
         <AccordionItem value="volume">
           <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-            Объем
+            Объём
           </AccordionTrigger>
           <AccordionContent>
             <FilterSection
               title=""
-              options={filterOptions.volumes}
+              options={volumes}
               selected={selectedVolumes}
               onToggle={onToggleVolume}
             />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="packaging">
+        <AccordionItem value="brand">
           <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-            Упаковка
+            Бренд
           </AccordionTrigger>
           <AccordionContent>
             <FilterSection
               title=""
-              options={filterOptions.packaging}
-              selected={selectedPackaging}
-              onToggle={onTogglePackaging}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="fragrance">
-          <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-            Аромат
-          </AccordionTrigger>
-          <AccordionContent>
-            <FilterSection
-              title=""
-              options={filterOptions.fragrances}
-              selected={selectedFragrances}
-              onToggle={onToggleFragrance}
+              options={brands}
+              selected={selectedBrands}
+              onToggle={onToggleBrand}
             />
           </AccordionContent>
         </AccordionItem>
@@ -186,13 +156,19 @@ function FilterSidebar({
   );
 }
 
-function ProductCard({
-  product,
-  onRequestPrice,
-}: {
-  product: (typeof products)[0];
+interface ProductCardProps {
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    volume: string;
+    brand: { name: string };
+    category: { name: string };
+  };
   onRequestPrice: () => void;
-}) {
+}
+
+function ProductCard({ product, onRequestPrice }: ProductCardProps) {
   return (
     <motion.div
       layout
@@ -208,27 +184,12 @@ function ProductCard({
             <Package className="w-16 h-16 text-green-mid/20 group-hover:scale-125 group-hover:text-green-mid/35 transition-all duration-500" />
           </div>
 
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.isNew && (
-              <Badge className="bg-green-bright text-white border-0 text-xs">
-                <Sparkles className="w-3 h-3 mr-1" />
-                Новинка
-              </Badge>
-            )}
-            {product.isBestseller && (
-              <Badge className="bg-earth-warm text-white border-0 text-xs">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                Хит
-              </Badge>
-            )}
-          </div>
-
-          <div className="absolute bottom-3 right-3">
+          <div className="absolute top-3 left-3">
             <Badge
               variant="secondary"
               className="bg-white/80 backdrop-blur-sm text-ink/70 text-xs"
             >
-              {product.categoryLabel}
+              {product.category.name}
             </Badge>
           </div>
         </div>
@@ -240,31 +201,14 @@ function ProductCard({
             {product.name}
           </h3>
         </Link>
-        <p className="text-sm text-ink/50 mt-1 line-clamp-1">{product.tagline}</p>
 
         <div className="flex flex-wrap gap-1.5 mt-3">
-          {product.specs.packaging.slice(0, 2).map((pkg) => (
-            <span
-              key={pkg}
-              className="inline-flex items-center px-2 py-1 rounded-md bg-green-mist/60 text-xs text-green-deep"
-            >
-              {pkg}
-            </span>
-          ))}
-          {product.specs.packaging.length > 2 && (
-            <span className="text-xs text-ink/40 px-1">
-              +{product.specs.packaging.length - 2}
-            </span>
-          )}
-        </div>
-
-        <div className="mt-4 flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className="border-earth/30 text-earth bg-earth/5 text-xs"
-          >
-            Мин. заказ: {product.moq}
-          </Badge>
+          <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-mist/60 text-xs text-green-deep">
+            {product.volume}
+          </span>
+          <span className="inline-flex items-center px-2 py-1 rounded-md bg-earth/10 text-xs text-earth">
+            {product.brand.name}
+          </span>
         </div>
 
         <div className="mt-4 pt-4 border-t border-green-mist/30">
@@ -288,54 +232,53 @@ function CatalogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const initialCategory = (() => {
-    const cat = searchParams.get("category") as ProductCategory | "all";
-    return (cat && categories.some((c) => c.id === cat)) ? cat : "all";
-  })();
+  const { products, loading: productsLoading } = useProducts();
+  const { categories, loading: categoriesLoading } = useCategories();
+
+  const initialCategory = searchParams.get("category") || "all";
   const initialVolumes = searchParams.get("volumes")?.split(",") || [];
-  const initialPackaging = searchParams.get("packaging")?.split(",") || [];
-  const initialFragrances = searchParams.get("fragrances")?.split(",") || [];
+  const initialBrands = searchParams.get("brands")?.split(",") || [];
 
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all">(initialCategory);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedVolumes, setSelectedVolumes] = useState<string[]>(initialVolumes);
-  const [selectedPackaging, setSelectedPackaging] = useState<string[]>(initialPackaging);
-  const [selectedFragrances, setSelectedFragrances] = useState<string[]>(initialFragrances);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(initialBrands);
 
-  const filterOptions = getFilterOptions();
+  const volumes = useMemo(() => {
+    const v = new Set(products.map((p) => p.volume));
+    return Array.from(v).sort((a, b) => {
+      const aNum = parseInt(a.replace(/[^\d]/g, "")) || 0;
+      const bNum = parseInt(b.replace(/[^\d]/g, "")) || 0;
+      return aNum - bNum;
+    });
+  }, [products]);
 
-  const updateURL = useCallback(
-    (params: {
-      category?: ProductCategory | "all";
-      volumes?: string[];
-      packaging?: string[];
-      fragrances?: string[];
-    }) => {
-      const newParams = new URLSearchParams();
+  const brands = useMemo(() => {
+    const b = new Set(products.map((p) => p.brand.name));
+    return Array.from(b).sort();
+  }, [products]);
 
-      if (params.category && params.category !== "all") {
-        newParams.set("category", params.category);
-      }
-      if (params.volumes?.length) {
-        newParams.set("volumes", params.volumes.join(","));
-      }
-      if (params.packaging?.length) {
-        newParams.set("packaging", params.packaging.join(","));
-      }
-      if (params.fragrances?.length) {
-        newParams.set("fragrances", params.fragrances.join(","));
-      }
+  const updateURL = (params: { category?: string; volumes?: string[]; brands?: string[] }) => {
+    const newParams = new URLSearchParams();
 
-      const queryString = newParams.toString();
-      router.push(queryString ? `?${queryString}` : "/catalog", { scroll: false });
-    },
-    [router]
-  );
+    if (params.category && params.category !== "all") {
+      newParams.set("category", params.category);
+    }
+    if (params.volumes?.length) {
+      newParams.set("volumes", params.volumes.join(","));
+    }
+    if (params.brands?.length) {
+      newParams.set("brands", params.brands.join(","));
+    }
 
-  const handleCategoryChange = (category: ProductCategory | "all") => {
+    const queryString = newParams.toString();
+    router.push(queryString ? `?${queryString}` : "/catalog", { scroll: false });
+  };
+
+  const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    updateURL({ category, volumes: selectedVolumes, packaging: selectedPackaging, fragrances: selectedFragrances });
+    updateURL({ category, volumes: selectedVolumes, brands: selectedBrands });
   };
 
   const toggleVolume = (volume: string) => {
@@ -343,53 +286,60 @@ function CatalogContent() {
       ? selectedVolumes.filter((v) => v !== volume)
       : [...selectedVolumes, volume];
     setSelectedVolumes(newVolumes);
-    updateURL({ category: selectedCategory, volumes: newVolumes, packaging: selectedPackaging, fragrances: selectedFragrances });
+    updateURL({ category: selectedCategory, volumes: newVolumes, brands: selectedBrands });
   };
 
-  const togglePackaging = (packaging: string) => {
-    const newPackaging = selectedPackaging.includes(packaging)
-      ? selectedPackaging.filter((p) => p !== packaging)
-      : [...selectedPackaging, packaging];
-    setSelectedPackaging(newPackaging);
-    updateURL({ category: selectedCategory, volumes: selectedVolumes, packaging: newPackaging, fragrances: selectedFragrances });
-  };
-
-  const toggleFragrance = (fragrance: string) => {
-    const newFragrances = selectedFragrances.includes(fragrance)
-      ? selectedFragrances.filter((f) => f !== fragrance)
-      : [...selectedFragrances, fragrance];
-    setSelectedFragrances(newFragrances);
-    updateURL({ category: selectedCategory, volumes: selectedVolumes, packaging: selectedPackaging, fragrances: newFragrances });
+  const toggleBrand = (brand: string) => {
+    const newBrands = selectedBrands.includes(brand)
+      ? selectedBrands.filter((b) => b !== brand)
+      : [...selectedBrands, brand];
+    setSelectedBrands(newBrands);
+    updateURL({ category: selectedCategory, volumes: selectedVolumes, brands: newBrands });
   };
 
   const clearFilters = () => {
     setSelectedCategory("all");
     setSelectedVolumes([]);
-    setSelectedPackaging([]);
-    setSelectedFragrances([]);
+    setSelectedBrands([]);
     router.push("/catalog", { scroll: false });
   };
 
-  const filteredProducts = filterProducts(selectedCategory, selectedVolumes, selectedPackaging, selectedFragrances);
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      if (selectedCategory !== "all" && product.category.slug !== selectedCategory) {
+        return false;
+      }
+      if (selectedVolumes.length && !selectedVolumes.includes(product.volume)) {
+        return false;
+      }
+      if (selectedBrands.length && !selectedBrands.includes(product.brand.name)) {
+        return false;
+      }
+      return true;
+    });
+  }, [products, selectedCategory, selectedVolumes, selectedBrands]);
 
   const activeFiltersCount =
-    selectedVolumes.length + selectedPackaging.length + selectedFragrances.length + (selectedCategory !== "all" ? 1 : 0);
+    selectedVolumes.length + selectedBrands.length + (selectedCategory !== "all" ? 1 : 0);
 
-  const filterSidebarProps: FilterSidebarProps = {
-    filterOptions,
-    selectedVolumes,
-    selectedPackaging,
-    selectedFragrances,
-    onToggleVolume: toggleVolume,
-    onTogglePackaging: togglePackaging,
-    onToggleFragrance: toggleFragrance,
-    onClear: clearFilters,
-    activeFiltersCount,
-  };
+  const categoryTabs = useMemo(() => {
+    const tabs = [{ id: "all", label: "Все" }];
+    categories.forEach((cat) => {
+      tabs.push({ id: cat.slug, label: cat.name });
+    });
+    return tabs;
+  }, [categories]);
+
+  if (productsLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="animate-pulse text-green-mid">Загрузка...</div>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Page Header */}
       <div className="bg-gradient-to-br from-green-deep via-green-mid to-green-bright text-white pt-40 pb-24 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '36px 36px' }} />
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-green-bright/10 to-transparent" />
@@ -414,10 +364,9 @@ function CatalogContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Category Tabs */}
         <div className="mb-10">
           <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+            {categoryTabs.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryChange(cat.id)}
@@ -435,14 +384,21 @@ function CatalogContent() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 bg-white rounded-2xl p-6 border border-green-mist/40">
-              <FilterSidebar {...filterSidebarProps} />
+              <FilterSidebar
+                volumes={volumes}
+                brands={brands}
+                selectedVolumes={selectedVolumes}
+                selectedBrands={selectedBrands}
+                onToggleVolume={toggleVolume}
+                onToggleBrand={toggleBrand}
+                onClear={clearFilters}
+                activeFiltersCount={activeFiltersCount}
+              />
             </div>
           </aside>
 
-          {/* Mobile Filters */}
           <div className="lg:hidden flex items-center justify-between mb-4">
             <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
               <SheetTrigger>
@@ -477,14 +433,14 @@ function CatalogContent() {
                         </button>
                       )}
                     </div>
-                    <Accordion defaultValue={["volume", "packaging", "fragrance"]}>
+                    <Accordion defaultValue={["volume", "brand"]}>
                       <AccordionItem value="volume">
                         <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-                          Объем
+                          Объём
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-2">
-                            {filterOptions.volumes.map((option) => (
+                            {volumes.map((option) => (
                               <label key={option} className="flex items-center gap-3 cursor-pointer group">
                                 <div
                                   className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedVolumes.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
@@ -498,41 +454,21 @@ function CatalogContent() {
                           </div>
                         </AccordionContent>
                       </AccordionItem>
-                      <AccordionItem value="packaging">
+                      <AccordionItem value="brand">
                         <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-                          Упаковка
+                          Бренд
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-2">
-                            {filterOptions.packaging.map((option) => (
+                            {brands.map((option) => (
                               <label key={option} className="flex items-center gap-3 cursor-pointer group">
                                 <div
-                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedPackaging.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
-                                  onClick={() => togglePackaging(option)}
+                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedBrands.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
+                                  onClick={() => toggleBrand(option)}
                                 >
-                                  {selectedPackaging.includes(option) && <Check className="w-3 h-3 text-white" />}
+                                  {selectedBrands.includes(option) && <Check className="w-3 h-3 text-white" />}
                                 </div>
-                                <span className={cn("text-sm transition-colors", selectedPackaging.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                      <AccordionItem value="fragrance">
-                        <AccordionTrigger className="font-display font-semibold text-green-deep hover:no-underline">
-                          Аромат
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2">
-                            {filterOptions.fragrances.map((option) => (
-                              <label key={option} className="flex items-center gap-3 cursor-pointer group">
-                                <div
-                                  className={cn("w-5 h-5 rounded border-2 flex items-center justify-center transition-colors", selectedFragrances.includes(option) ? "bg-green-mid border-green-mid" : "border-green-mid/30 group-hover:border-green-mid")}
-                                  onClick={() => toggleFragrance(option)}
-                                >
-                                  {selectedFragrances.includes(option) && <Check className="w-3 h-3 text-white" />}
-                                </div>
-                                <span className={cn("text-sm transition-colors", selectedFragrances.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
+                                <span className={cn("text-sm transition-colors", selectedBrands.includes(option) ? "text-green-deep font-medium" : "text-ink/70 group-hover:text-ink")}>{option}</span>
                               </label>
                             ))}
                           </div>
@@ -553,7 +489,6 @@ function CatalogContent() {
             </span>
           </div>
 
-          {/* Product Grid */}
           <main className="flex-1">
             <motion.div
               layout
