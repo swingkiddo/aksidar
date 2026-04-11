@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import HomePageClient from "./page.client";
+import HomePageClient from "../page.client";
 
 export const dynamic = "force-dynamic";
 
