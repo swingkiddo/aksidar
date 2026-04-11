@@ -14,10 +14,12 @@ import {
   Handshake,
   Tag,
   FileText,
+  Truck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactDialog } from "@/components/shared/ContactDialog";
 import { ProductCard } from "@/components/shared/ProductCard";
+import { USPCard } from "@/components/shared/USPCard";
 import { trustStats, usps } from "@/lib/data";
 
 const fadeInUp = {
@@ -54,6 +56,7 @@ const iconMap: Record<string, React.ElementType> = {
   BadgeCheck,
   Handshake,
   Tag,
+  Truck,
 };
 
 interface CertificateFromDB {
@@ -345,25 +348,21 @@ export default function HomePageClient({
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch"
           >
             {usps.map((usp, index) => {
-              const IconComponent = iconMap[usp.icon] || Package;
               return (
                 <motion.div
                   key={index}
                   variants={fadeInUp}
-                  className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10 hover:border-white/15 transition-all duration-300"
+                  className=""
                 >
-                  <div className="w-14 h-14 rounded-xl bg-green-bright/20 flex items-center justify-center mb-6">
-                    <IconComponent className="w-7 h-7 text-green-light" />
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-white mb-3">
-                    {usp.title}
-                  </h3>
-                  <p className="text-white/50 text-sm leading-relaxed">
-                    {usp.description}
-                  </p>
+                  <USPCard
+                    title={usp.title}
+                    description={usp.description}
+                    Icon={iconMap[usp.icon] || Package}
+                    fadeInUp={fadeInUp}
+                  />
                 </motion.div>
               );
             })}
@@ -402,10 +401,9 @@ export default function HomePageClient({
               </motion.p>
               <motion.ul variants={fadeInUp} className="mt-8 space-y-4">
                 {[
-                  "Соответствие ГОСТ Р",
+                  "Декларации соответствия ГОСТ Р",
                   "Санитарно-эпидемиологические заключения",
-                  "Система менеджмента качества ISO 9001",
-                  "Eco-friendly сертификация",
+                  "Соответствие техническим регламентам ЕАЭС",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4">
                     <div className="w-6 h-6 rounded-full bg-green-mist flex items-center justify-center flex-shrink-0 mt-0.5">
