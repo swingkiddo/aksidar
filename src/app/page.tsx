@@ -13,7 +13,7 @@ export default async function HomePage() {
       },
       orderBy: { sortOrder: "asc" },
     }),
-    prisma.certificate.findMany({ take: 4 }),
+    prisma.certificate.findMany({ take: 9 }),
   ]);
 
   return (
