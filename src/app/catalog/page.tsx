@@ -2,7 +2,7 @@
 
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Filter,
   Package,
@@ -29,14 +29,6 @@ import { ContactDialog } from "@/components/shared/ContactDialog";
 import { ProductCard } from "@/components/shared/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06 },
-  },
-};
 
 interface FilterSectionProps {
   title: string;
@@ -417,31 +409,23 @@ function CatalogContent() {
           </div>
 
           <main className="flex-1">
-            <motion.div
-              layout
-              variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
-              className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6"
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    variant="product"
-                    id={product.id}
-                    name={product.name}
-                    slug={product.slug}
-                    image={product.image}
-                    href={`/catalog/${product.slug}`}
-                    category={product.category.name}
-                    brand={product.brand.name}
-                    volume={product.volume}
-                    onRequestPrice={() => setIsContactOpen(true)}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  variant="product"
+                  id={product.id}
+                  name={product.name}
+                  slug={product.slug}
+                  image={product.image}
+                  href={`/catalog/${product.slug}`}
+                  category={product.category.name}
+                  brand={product.brand.name}
+                  volume={product.volume}
+                  onRequestPrice={() => setIsContactOpen(true)}
+                />
+              ))}
+            </div>
 
             {filteredProducts.length === 0 && (
               <div className="text-center py-20">

@@ -35,12 +35,10 @@ export function ProductCard(props: ProductCardProps) {
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      className="group h-full bg-white rounded-2xl overflow-hidden border border-green-mist/40 hover:shadow-xl hover:shadow-green-deep/5 transition-all duration-500 hover:scale-[1.02] flex flex-col"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="group h-full bg-white rounded-2xl overflow-hidden border border-green-mist/40 hover:shadow-xl hover:shadow-green-deep/5 transition-all duration-500 hover:scale-[1.02] flex flex-col will-change-transform"
     >
       <Link href={href} className="block">
         <div className="aspect-[4/3] relative bg-gradient-to-br from-green-mist to-green-pale overflow-hidden backdrop-blur-sm">
