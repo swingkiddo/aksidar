@@ -12,7 +12,8 @@ export function USPCard({
   title: string;
   description: string;
   Icon: ElementType;
-  fadeInUp: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fadeInUp?: any;
 }) {
   return (
     <motion.div

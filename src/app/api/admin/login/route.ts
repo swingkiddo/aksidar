@@ -34,7 +34,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ success: true, adminId: admin.id });
+    const response = NextResponse.json({ success: true, adminId: admin.id });
+    
+    response.cookies.set("admin_session", admin.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
     return NextResponse.json(
       { error: "Внутренняя ошибка сервера" },

@@ -94,18 +94,17 @@ export function Header() {
             </Link>
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "inline-flex shrink-0 items-center justify-center rounded-lg size-8 hover:bg-muted",
-                    isScrolled ? "text-ink" : "text-white"
-                  )}
-                >
-                  <Menu className="w-6 h-6" />
-                  <span className="sr-only">Открыть меню</span>
-                </button>
-              </SheetTrigger>
+              <button
+                type="button"
+                onClick={() => setIsOpen(true)}
+                className={cn(
+                  "inline-flex shrink-0 items-center justify-center rounded-lg size-8 hover:bg-muted",
+                  isScrolled ? "text-ink" : "text-white"
+                )}
+              >
+                <Menu className="w-6 h-6" />
+                <span className="sr-only">Открыть меню</span>
+              </button>
               <SheetContent side="right" className="w-[300px] bg-cream">
                 <SheetTitle className="sr-only">Навигация</SheetTitle>
                 <div className="flex flex-col h-full">
