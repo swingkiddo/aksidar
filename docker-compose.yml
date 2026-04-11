@@ -14,6 +14,15 @@ services:
     restart: unless-stopped
     command: npm run dev
 
+  python-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    volumes:
+      - ./public/images:/app/public/images
+    profiles:
+      - manual
+
 networks:
   default:
     name: dar-kosmetik-network

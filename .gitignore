@@ -43,4 +43,11 @@ next-env.d.ts
 PROJECT_PLAN.md
 
 /src/generated/prisma
-/prisma/dev.db
+# /prisma/dev.db
+
+# images
+public/images/soap_*.png
+public/images/soap_*.jpg
+public/images/issue.png
+public/images/processed/
+public/images/source/

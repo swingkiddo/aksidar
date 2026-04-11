@@ -69,6 +69,49 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { fromPattern, toPattern } = body;
+
+    if (!fromPattern || !toPattern) {
+      return NextResponse.json(
+        { error: "Требуются fromPattern и toPattern" },
+        { status: 400 }
+      );
+    }
+
+    const products = await prisma.product.findMany({
+      where: {
+        image: {
+          contains: fromPattern,
+        },
+      },
+    });
+
+    const updates = await Promise.all(
+      products.map((product) =>
+        prisma.product.update({
+          where: { id: product.id },
+          data: {
+            image: product.image?.replace(fromPattern, toPattern) ?? null,
+          },
+        })
+      )
+    );
+
+    return NextResponse.json({
+      updated: updates.length,
+      products: updates,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Ошибка при обновлении изображений" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

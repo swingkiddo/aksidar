@@ -1,0 +1,20 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    rembg[cpu] \
+    opencv-python-headless \
+    pillow \
+    tqdm
+
+COPY scripts/ ./scripts/
+
+# Ensure the app volume mount point exists
+RUN mkdir -p /app/public/images
+
+CMD ["python", "scripts/remove_white_bg.py"]

@@ -6,7 +6,9 @@ COPY package*.json ./
 
 RUN npm ci --legacy-peer-deps
 
-COPY . .
+COPY prisma ./prisma/
+
+RUN npx prisma generate
 
 EXPOSE 3000
 

@@ -2,12 +2,10 @@
 
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Filter,
   Package,
-  ArrowRight,
   X,
   Check,
 } from "lucide-react";
@@ -28,6 +26,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { ContactDialog } from "@/components/shared/ContactDialog";
+import { ProductCard } from "@/components/shared/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 
@@ -153,87 +152,6 @@ function FilterSidebar({
         </AccordionItem>
       </Accordion>
     </div>
-  );
-}
-
-interface ProductCardProps {
-  product: {
-    id: string;
-    name: string;
-    slug: string;
-    volume: string;
-    image: string | null;
-    brand: { name: string };
-    category: { name: string };
-  };
-  onRequestPrice: () => void;
-}
-
-function ProductCard({ product, onRequestPrice }: ProductCardProps) {
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-green-mist/40 hover:shadow-xl hover:shadow-green-deep/5 transition-all duration-500"
-    >
-      <Link href={`/catalog/${product.slug}`} className="block">
-        <div className="aspect-[4/3] relative bg-gradient-to-br from-green-mist to-green-pale overflow-hidden">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-contain p-4"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Package className="w-16 h-16 text-green-mid/20 group-hover:scale-125 group-hover:text-green-mid/35 transition-all duration-500" />
-            </div>
-          )}
-
-          <div className="absolute top-3 left-3">
-            <Badge
-              variant="secondary"
-              className="bg-white/80 backdrop-blur-sm text-ink/70 text-xs"
-            >
-              {product.category.name}
-            </Badge>
-          </div>
-        </div>
-      </Link>
-
-      <div className="p-5">
-        <Link href={`/catalog/${product.slug}`}>
-          <h3 className="font-display text-lg font-semibold text-green-deep group-hover:text-green-mid transition-colors line-clamp-2">
-            {product.name}
-          </h3>
-        </Link>
-
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-mist/60 text-xs text-green-deep">
-            {product.volume}
-          </span>
-          <span className="inline-flex items-center px-2 py-1 rounded-md bg-earth/10 text-xs text-earth">
-            {product.brand.name}
-          </span>
-        </div>
-
-        <div className="mt-4 pt-4 border-t border-green-mist/30">
-          <Button
-            className="w-full bg-green-mid hover:bg-green-deep text-white transition-all duration-300"
-            onClick={(e) => {
-              e.preventDefault();
-              onRequestPrice();
-            }}
-          >
-            Запросить цену
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -510,7 +428,15 @@ function CatalogContent() {
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
-                    product={product}
+                    variant="product"
+                    id={product.id}
+                    name={product.name}
+                    slug={product.slug}
+                    image={product.image}
+                    href={`/catalog/${product.slug}`}
+                    category={product.category.name}
+                    brand={product.brand.name}
+                    volume={product.volume}
                     onRequestPrice={() => setIsContactOpen(true)}
                   />
                 ))}
