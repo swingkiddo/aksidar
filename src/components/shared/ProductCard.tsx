@@ -62,7 +62,7 @@ export function ProductCard(props: ProductCardProps) {
                 variant="secondary"
                 className="bg-white/80 backdrop-blur-sm text-ink/70 text-xs"
               >
-                {props.category}
+                {props.category.includes(" — ") ? props.category.split(" — ")[0] : props.category}
               </Badge>
             </div>
           )}
