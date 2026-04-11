@@ -115,7 +115,7 @@ export function ProductCard(props: ProductCardProps) {
           <div className="mt-auto pt-4">
             <Link
               href={href}
-              className="flex items-center justify-center w-full py-2.5 px-4 rounded-lg bg-green-mist/60 hover:bg-green-mid text-white text-sm font-medium transition-all duration-300 cursor-pointer"
+              className="flex items-center justify-center w-full py-2.5 px-4 rounded-lg bg-green-mist/50 group-hover:bg-green-mid text-white text-sm font-medium transition-all duration-300 cursor-pointer"
             >
               Перейти в каталог
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
