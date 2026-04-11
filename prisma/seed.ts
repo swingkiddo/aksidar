@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
 
 const prisma = new PrismaClient();
 
@@ -127,7 +128,7 @@ async function main() {
     
     const product = await prisma.product.upsert({
       where: { slug },
-      update: {},
+      update: { image: `/images/soap_${String(i + 1).padStart(2, "0")}.png` },
       create: {
         name: p.name,
         slug,
