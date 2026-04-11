@@ -123,16 +123,17 @@ export function ProductCard(props: ProductCardProps) {
 
         {variant === "product" && props.onRequestPrice && (
           <div className="mt-4 pt-4 border-t border-green-mist/30">
-            <Button
-              className="w-full bg-green-mid hover:bg-green-deep text-white transition-all duration-300"
+            <button
+              type="button"
+              className="flex items-center justify-center w-full py-2.5 px-4 rounded-lg bg-green-mist/50 group-hover:bg-green-mid text-white text-sm font-medium transition-all duration-300"
               onClick={(e) => {
                 e.preventDefault();
                 props.onRequestPrice?.();
               }}
             >
               Запросить цену
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
+              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+            </button>
           </div>
         )}
       </div>
