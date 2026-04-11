@@ -5,7 +5,7 @@ export default function AdminRootLayout({
 }) {
   return (
     <html lang="ru">
-      <body className="antialiased">
+      <body className="antialiased bg-gray-50">
         {children}
       </body>
     </html>

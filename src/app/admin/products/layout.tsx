@@ -11,7 +11,7 @@ const navItems = [
   { href: "/admin/certificates", label: "Сертификаты", icon: Award },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
