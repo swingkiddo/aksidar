@@ -252,7 +252,8 @@ function CatalogContent() {
   const categoryTabs = useMemo(() => {
     const tabs = [{ id: "all", label: "Все" }];
     categories.forEach((cat) => {
-      tabs.push({ id: cat.slug, label: cat.name });
+      const shortName = cat.name.includes(" — ") ? cat.name.split(" — ")[0] : cat.name;
+      tabs.push({ id: cat.slug, label: shortName });
     });
     return tabs;
   }, [categories]);
