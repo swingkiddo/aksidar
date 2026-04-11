@@ -135,6 +135,7 @@ async function main() {
         categoryId: p.categoryId,
         brandId: p.brandId,
         sortOrder: i + 1,
+        image: `/images/soap_${String(i + 1).padStart(2, "0")}.png`,
       },
     });
 
