@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ContactDialog } from "@/components/shared/ContactDialog";
 import { ProductCard } from "@/components/shared/ProductCard";
-import { USPCard } from "@/components/shared/USPCard";
+import { ValuesSection } from "@/components/shared/ValuesSection";
 import { trustStats, usps } from "@/lib/data";
 
 const fadeInUp = {
@@ -310,65 +310,12 @@ export default function HomePageClient({
       </section>
 
       {/* Why Us / USPs */}
-      <section className="py-24 lg:py-32 bg-green-deep relative overflow-hidden">
-        {/* Background texture */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-green-bright/5 to-transparent" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="text-center mb-16"
-          >
-            <motion.span
-              variants={fadeInUp}
-              className="text-green-light font-medium text-sm uppercase tracking-wider"
-            >
-              Почему мы
-            </motion.span>
-            <motion.h2
-              variants={fadeInUp}
-              className="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white"
-            >
-              Преимущества работы с нами
-            </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch"
-          >
-            {usps.map((usp, index) => {
-              return (
-                <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  className=""
-                >
-                  <USPCard
-                    title={usp.title}
-                    description={usp.description}
-                    Icon={iconMap[usp.icon] || Package}
-                    fadeInUp={fadeInUp}
-                  />
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
+      <ValuesSection
+        title="Преимущества работы с нами"
+        subtitle="Почему мы"
+        items={usps}
+        iconMap={iconMap}
+      />
 
       {/* Certifications Teaser */}
       <section className="py-24 lg:py-32 grain-overlay">

@@ -4,16 +4,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Factory,
-  Leaf,
   Award,
   Globe,
   Users,
-  Shield,
-  HeartHandshake,
-  Recycle,
   MapPin,
 } from "lucide-react";
-import { trustStats } from "@/lib/data";
+import { trustStats, values } from "@/lib/data";
+import { ValuesSection } from "@/components/shared/ValuesSection";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -27,33 +24,6 @@ const staggerContainer = {
     transition: { staggerChildren: 0.1 },
   },
 };
-
-const values = [
-  {
-    icon: Leaf,
-    title: "Натуральные ингредиенты",
-    description:
-      "Используем только качественное сырье от проверенных поставщиков. Растительные экстракты, эфирные масла и гипоаллергенные компоненты.",
-  },
-  {
-    icon: Recycle,
-    title: "Ответственное производство",
-    description:
-      "Соблюдаем принципы green manufacturing: минимизация отходов, энергоэффективность, переработка упаковки.",
-  },
-  {
-    icon: Shield,
-    title: "Контроль качества",
-    description:
-      "Многоступенчатый контроль на всех этапах: от входящего сырья до готовой продукции. Собственная лаборатория.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Долгосрочные партнерства",
-    description:
-      "Ценим каждого клиента и стремимся к долгосрочному сотрудничеству. Гибкие условия, лояльность, поддержка.",
-  },
-];
 
 const geography = [
   { city: "Москва и МО", type: "Штаб-квартира и производство", color: "bg-green-mid" },
@@ -258,51 +228,11 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="py-24 lg:py-32 bg-green-deep relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="text-green-light font-medium text-sm uppercase tracking-wider">
-              Ценности
-            </span>
-            <h2 className="mt-4 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
-              Принципы нашей работы
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all duration-300"
-              >
-                <div className="w-14 h-14 rounded-xl bg-green-bright/20 flex items-center justify-center mb-6">
-                  <value.icon className="w-7 h-7 text-green-light" />
-                </div>
-                <h3 className="font-display text-xl font-semibold text-white mb-3">
-                  {value.title}
-                </h3>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  {value.description}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      <ValuesSection
+        title="Принципы нашей работы"
+        subtitle="Ценности"
+        items={values}
+      />
 
       {/* Geography */}
       <section className="py-24 lg:py-32 grain-overlay">
