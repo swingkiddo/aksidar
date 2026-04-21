@@ -51,3 +51,5 @@ public/images/soap_*.jpg
 public/images/issue.png
 public/images/processed/
 public/images/source/
+temp_auto_push.bat
+temp_interactive_push.bat
